@@ -12,7 +12,7 @@ export const Register = () => {
   const Navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    const res = await fetch("http://localhost:8080/register", {
+    const res = await fetch("https://expense-management-oj0z.onrender.com/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ data }),
