@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { message } from "antd";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
-
+import login from '../Assets/login.jpg';
 export const Login = () => {
   const Navigate = useNavigate();
   const { register, handleSubmit } = useForm();
@@ -39,13 +39,10 @@ export const Login = () => {
   },[Navigate]);
 
   return (
-    <div className="container w-[100vw] h-[100vh] m-auto flex">
+    <div className="container bg-gradient-to-br from-white to- w-[100vw] h-[100vh] m-auto flex">
       <div className="login-side w-[100%] m-auto  flex-col h-[100%]">
         <div className="logo p-5 text-2xl mt-12">
-          <Link className="text-sm ml-[4rem]" to="/">
-            Back
-          </Link>
-          <h1 className="font-Playwrite ml-[4rem] w-fit">ECom Website</h1>
+          <h1 className="font-Playwrite ml-[4rem] w-fit">Expense Management</h1>
         </div>
         <div className="headings  p-5 mt-6">
           <h1 className="w-fit ml-[4rem] text-2xl font-Playwrite">
@@ -107,7 +104,7 @@ export const Login = () => {
         </div>
       </div>
       <div className="login-img flex items-center justify-center w-[100%]  h-[100%]">
-        {/* <img className="rounded-3xl" src={loginimg} alt='login'/> */}
+        <img className="rounded-3xl" src={login} alt='login'/>
       </div>
     </div>
   );

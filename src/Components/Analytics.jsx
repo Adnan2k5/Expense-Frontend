@@ -4,7 +4,6 @@ import { Card, Progress } from "antd";
 export const Analytics = ({ allTransaction }) => {
   const totalTransaction = allTransaction.length;
 
-  // Filter income and expense transactions
   const incomeTransactions = allTransaction.filter(
     (transaction) => transaction.type === "Income"
   );
@@ -12,7 +11,6 @@ export const Analytics = ({ allTransaction }) => {
     (transaction) => transaction.type === "Expense"
   );
 
-  // Calculate total income and expense amounts
   const totalIncome = incomeTransactions.reduce(
     (acc, transaction) => acc + transaction.amount,
     0
@@ -34,7 +32,6 @@ export const Analytics = ({ allTransaction }) => {
 
   const turnover = totalIncome - totalExpense;
 
-  // Calculate income and expense percentages
   const incomePercentage = (totalIncome / (totalIncome + totalExpense)) * 100;
   const expensePercentage = (totalExpense / (totalIncome + totalExpense)) * 100;
   return (

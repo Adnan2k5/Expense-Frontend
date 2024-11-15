@@ -21,7 +21,7 @@ export const Nabvar = () => {
   }
   return (
     <nav>
-      <ul className="flex border-b-2 border-gray-400 w-full h-[10vh] justify-around items-center">
+      <ul className="flex  border-b-2 border-gray-400 w-full h-[10vh] justify-around items-center">
         <li>
           <Link to="/">Home</Link>
         </li>

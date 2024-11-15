@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, message, Modal, Select, Table, DatePicker } from "antd";
 import { Layout } from "../Layout/Layout";
 import { v4 as uuidv4 } from "uuid";
-import { EditOutlined, DeleteOutlined, AreaChartOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  AreaChartOutlined,
+  UnorderedListOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 import { Analytics } from "../Components/Analytics";
+import "./home.css";
 
 export const Home = () => {
   const [showModal, setShowModal] = useState(false);
@@ -14,16 +19,16 @@ export const Home = () => {
   const [CustomDate, setCustomDate] = useState([]);
   const [type, setType] = useState("all");
   const [edit, setEdit] = useState(null);
-  const [View, setView] = useState('table');
-  const [form] = Form.useForm(); // Create a form instance
+  const [View, setView] = useState("table");
+  const [update, setupdate] = useState(true)
+  const [form] = Form.useForm();
 
-  // Table Model
   const columns = [
     {
       title: "Date",
       dataIndex: "date",
       key: "0",
-      render: (text) => <span>{moment(text).format('DD-MM-YYYY')}</span>
+      render: (text) => <span>{moment(text).format("DD-MM-YYYY")}</span>,
     },
     {
       title: "Amount",
@@ -46,7 +51,7 @@ export const Home = () => {
       key: "4",
     },
     {
-      title: "Reference",
+      title: "Reference No",
       dataIndex: "reference",
     },
     {
@@ -55,22 +60,20 @@ export const Home = () => {
         <div className="flex justify-around w-[3rem]">
           <EditOutlined
             onClick={() => {
+              setupdate(false)
               setEdit(record);
               setShowModal(true);
-              form.setFieldsValue(record); // Set form values for editing
+              form.setFieldsValue(record);
             }}
           />
-          <DeleteOutlined />
         </div>
       ),
     },
   ];
-
-  // Get Transaction
   const getT = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const res = await fetch("http://localhost:8080/get", {
+      const res = await fetch("https://expense-management-oj0z.onrender.com/get", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user, freq, CustomDate, type }),
@@ -81,7 +84,6 @@ export const Home = () => {
         key: uuidv4(),
       }));
       setTransaction(transactions);
-      console.log(transactions);
     } catch (error) {}
   };
 
@@ -89,7 +91,7 @@ export const Home = () => {
     const getTransaction = async () => {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
-        const res = await fetch("http://localhost:8080/get", {
+        const res = await fetch("https://expense-management-oj0z.onrender.com/get", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user, freq, CustomDate, type }),
@@ -100,30 +102,37 @@ export const Home = () => {
           key: uuidv4(),
         }));
         setTransaction(transactions);
-        console.log(transactions);
       } catch (error) {}
     };
     getTransaction();
   }, [freq, CustomDate, type]);
 
-  // Add Transaction
+
   const handleSubmit = async (value) => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const res = await fetch("http://localhost:8080/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...value, user }),
-      });
-      message.success("Transaction added");
-      await res.json();
-      setShowModal(false);
-      form.resetFields(); // Clear the form fields
+      if(update){
+        const res = await fetch("https://expense-management-oj0z.onrender.com/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...value, user }),
+        });
+        message.success("Transaction added");
+        await res.json();
+        setShowModal(false);
+        form.resetFields();
+      }
+      else{
+        const res = await fetch("https://expense-management-oj0z.onrender.com/edit", {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({...value, user})})
+        await res.json()
+        message.success("Transaction Updated")
+        setShowModal(false)
+      }
       getT();
-    } catch (error) {}
+    } catch (err) {
+    }
   };
 
-  // View
   return (
     <Layout>
       <div className="container w-full">
@@ -148,23 +157,24 @@ export const Home = () => {
             <Select
               className="w-[100%]"
               value={type}
-              onChange={(values) => setType(values)}>
+              onChange={(values) => setType(values)}
+            >
               <Select.Option value="all">All</Select.Option>
               <Select.Option value="Income">Income</Select.Option>
               <Select.Option value="Expense">Expense</Select.Option>
             </Select>
           </div>
           <div className="analytics gap-2 text-2xl flex items-center">
-            <UnorderedListOutlined onClick={() => setView('table')} />
-            <AreaChartOutlined onClick={() => setView('graph')} />
+            <UnorderedListOutlined onClick={() => setView("table")} />
+            <AreaChartOutlined onClick={() => setView("graph")} />
           </div>
           <div className="Add Button">
             <button
               className="flex m-auto items-center group cursor-pointer outline-none hover:rotate-90 duration-300"
               onClick={() => {
                 setShowModal(true);
-                setEdit(null); // Clear edit state
-                form.resetFields(); // Clear the form fields
+                setEdit(null);
+                form.resetFields();
               }}
             >
               <svg
@@ -205,13 +215,12 @@ export const Home = () => {
             <Form.Item label="Category" name="category">
               <Select>
                 <Select.Option value="Salary">Salary</Select.Option>
-                <Select.Option value="Tip">Tip</Select.Option>
-                <Select.Option value="Project">Project</Select.Option>
+                <Select.Option value="Fee">Fee</Select.Option>
                 <Select.Option value="Food">Food</Select.Option>
                 <Select.Option value="Bills">Bills</Select.Option>
               </Select>
             </Form.Item>
-            <Form.Item label={`Reference (Optional)`} name="reference">
+            <Form.Item label={`Reference No (Unique)`} name="reference">
               <Input type="text" />
             </Form.Item>
             <Form.Item label="Description (Optional)" name="description">
@@ -225,8 +234,8 @@ export const Home = () => {
             </div>
           </Form>
         </Modal>
-        <div className="content w-[100vw] p-8 ">
-          {View === 'table' ? (
+        <div className="content glass w-[100vw] p-8 ">
+          {View === "table" ? (
             <Table columns={columns} dataSource={allTransaction} />
           ) : (
             <Analytics allTransaction={allTransaction} />
@@ -236,4 +245,3 @@ export const Home = () => {
     </Layout>
   );
 };
-
